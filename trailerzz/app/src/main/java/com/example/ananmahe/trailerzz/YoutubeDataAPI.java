@@ -1,7 +1,9 @@
 package com.example.ananmahe.trailerzz;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
@@ -11,8 +13,13 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -24,9 +31,9 @@ public class YoutubeDataAPI {
     private static YouTube youtubeData;
     private static final String CHANNEL_ID = "UCkR0GY0ue02aMyM-oxwgg9g";
     private static YouTube.Search.List search;
-    private YoutubeDataAPIListener mListener;
+    private IYoutubeDataAPIListener mListener;
 
-    public YoutubeDataAPI(YoutubeDataAPIListener mListener){
+    public YoutubeDataAPI(IYoutubeDataAPIListener mListener){
         try {
             this.mListener = mListener;
             youtubeData = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
@@ -46,7 +53,8 @@ public class YoutubeDataAPI {
             search.setKey(DeveloperKey.DEVELOPER_KEY);
             search.setChannelId(CHANNEL_ID);
             search.setType("video");
-            search.setFields("items(id/videoId)");
+            search.setOrder("date");
+            search.setFields("items(id/videoId,snippet/title,snippet/publishedAt)");
             search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
             System.out.println("============: Channel id: " + search.getChannelId());
         } catch (GoogleJsonResponseException e) {
@@ -65,17 +73,34 @@ public class YoutubeDataAPI {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                System.out.println("######## InRun");
                 try {
+                    Looper.prepare();
                     final SearchListResponse searchResponse;
                     searchResponse = search.execute();
-                    System.out.println("######## Res: "+searchResponse.toString());
+                    List<SearchResult> searchResultList = searchResponse.getItems();
+                    System.out.println("######## Res: "+searchResultList.toString());
+                    final List<YouTubeData> youtubeDataList = new ArrayList<YouTubeData>();
+
+                    if (searchResultList != null) {
+                        Iterator<SearchResult> iteratorSearchResults = searchResultList.iterator();
+                        if (!iteratorSearchResults.hasNext()) {
+                            System.out.println("There aren't any results for your query.");
+                        }
+                        while (iteratorSearchResults.hasNext()) {
+                            SearchResult singleVideo = iteratorSearchResults.next();
+                            ResourceId rId = singleVideo.getId();
+                            SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD hh:mm:ss");
+                            youtubeDataList.add(new YouTubeData(singleVideo.getSnippet().getTitle(), sdf.format(new SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss").parse(singleVideo.getSnippet().getPublishedAt().toString())).toString(), rId.getVideoId()));
+                        }
+                    }
+
                     // create a handler to post messages to the main thread
-                    Handler mHandler = new Handler();
+                    Handler mHandler = new Handler(Looper.getMainLooper());
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            mListener.setResponse(searchResponse.toString());
+                            System.out.println("######## Sending response");
+                            mListener.responseRecieved(youtubeDataList);
                         }
                     });
                 } catch (IOException e) {
@@ -89,31 +114,8 @@ public class YoutubeDataAPI {
 
     }
 
-    interface 
-}
-
-class YoutubeDataAPIListener {
-    private static YoutubeDataAPIListener mListener = null;
-    private String response = "";
-
-    private YoutubeDataAPIListener() {
-
-    }
-
-    public static YoutubeDataAPIListener getListener() {
-        if (mListener == null) {
-            mListener = new YoutubeDataAPIListener();
-        }
-        return mListener;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
-    public void responseRecieved(String response) {
-        System.out.println("============ Result: " + response);
-        this.response = response;
+    interface IYoutubeDataAPIListener {
+        public void responseRecieved(List<YouTubeData> youTubeDataList);
     }
 
 }

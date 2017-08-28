@@ -26,14 +26,7 @@ public class TrailerzzApp extends YouTubeBaseActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        List<YouTubeData> youtubeChannelList = new ArrayList<YouTubeData>();
-
-        youtubeChannelList.add(new YouTubeData("Tesla", "01/01/2019", "FzMRvrLBgZw"));
-        youtubeChannelList.add(new YouTubeData("John Oliver", "31/01/2015", "ZwY2E0hjGuU"));
-        youtubeChannelList.add(new YouTubeData("Music", "21/01/2017", "M029MbIiZiM"));
-
-        mAdapter = new YouTubeDataAdapter(youtubeChannelList);
-        mRecyclerView.setAdapter(mAdapter);
+        mAdapter = new YouTubeDataAdapter(mRecyclerView);
     }
 }
 

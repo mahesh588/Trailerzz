@@ -24,16 +24,15 @@ import java.util.List;
  * Created by ananmahe on 8/15/17.
  */
 
-public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.YoutubeDataViewHolder> {
+public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.YoutubeDataViewHolder> implements YoutubeDataAPI.IYoutubeDataAPIListener {
 
     private List<YouTubeData> youtubeDataList;
-    private YoutubeDataAPIListener mListener;
     private YoutubeDataAPI youtubeDataAPI;
+    private RecyclerView mRecyclerview;
 
-    public YouTubeDataAdapter(List<YouTubeData> youtubeDataList) {
-        this.youtubeDataList = youtubeDataList;
-        this.mListener = YoutubeDataAPIListener.getListener();
+    public YouTubeDataAdapter(RecyclerView mRecyclerview) {
         youtubeDataAPI = new YoutubeDataAPI(this);
+        this.mRecyclerview = mRecyclerview;
         youtubeDataAPI.getData();
     }
 
@@ -47,9 +46,15 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
             super(v);
             vMovieTitle = (TextView) v.findViewById(R.id.movie_title);
             vReleaseDate = (TextView) v.findViewById(R.id.movie_release_date);
-            vMovieTrailer = (YouTubePlayerView) v.findViewById(R.id.movie_trailer);
+            //vMovieTrailer = (YouTubePlayerView) v.findViewById(R.id.movie_trailer);
             vMovieThumbnail = (YouTubeThumbnailView) v.findViewById(R.id.movie_thumbnail);
         }
+    }
+
+    public void responseRecieved(List<YouTubeData> youtubeDataList) {
+        this.youtubeDataList = youtubeDataList;
+        System.out.println("######### Response recieved");
+        mRecyclerview.setAdapter(this);
     }
 
     @Override
@@ -57,7 +62,7 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
         final YouTubeData trailerObj = youtubeDataList.get(i);
         youtubeDataViewHolder.vMovieTitle.setText(trailerObj.getTitle());
         youtubeDataViewHolder.vReleaseDate.setText(trailerObj.getReleaseDate());
-        youtubeDataViewHolder.vMovieTrailer.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {
+        /*youtubeDataViewHolder.vMovieTrailer.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
                 if (!b) {
@@ -69,7 +74,7 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
             public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult error) {
                 System.out.println(error);
             }
-        });
+        });*/
 
         final YouTubeThumbnailLoader.OnThumbnailLoadedListener  onThumbnailLoadedListener = new YouTubeThumbnailLoader.OnThumbnailLoadedListener(){
             @Override
