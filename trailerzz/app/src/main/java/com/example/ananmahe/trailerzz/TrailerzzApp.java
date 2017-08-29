@@ -28,7 +28,7 @@ public class TrailerzzApp extends Activity {
         TrailerzzApp.context = getApplicationContext();
 
         // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new ZoomCenterCardLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mAdapter = new YouTubeDataAdapter(mRecyclerView);
