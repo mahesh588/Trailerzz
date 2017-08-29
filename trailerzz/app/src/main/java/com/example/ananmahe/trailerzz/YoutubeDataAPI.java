@@ -10,6 +10,7 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.IOUtils;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
@@ -54,7 +55,7 @@ public class YoutubeDataAPI {
             search.setChannelId(CHANNEL_ID);
             search.setType("video");
             search.setOrder("date");
-            search.setFields("items(id/videoId,snippet/title,snippet/publishedAt)");
+            search.setFields("items(id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/medium/url)");
             search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
             System.out.println("============: Channel id: " + search.getChannelId());
         } catch (GoogleJsonResponseException e) {
@@ -90,7 +91,10 @@ public class YoutubeDataAPI {
                             SearchResult singleVideo = iteratorSearchResults.next();
                             ResourceId rId = singleVideo.getId();
                             SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD hh:mm:ss");
-                            youtubeDataList.add(new YouTubeData(singleVideo.getSnippet().getTitle(), sdf.format(new SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss").parse(singleVideo.getSnippet().getPublishedAt().toString())).toString(), rId.getVideoId()));
+
+                            youtubeDataList.add(new YouTubeData(singleVideo.getSnippet().getTitle(),
+                                    sdf.format(new SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss").parse(singleVideo.getSnippet().getPublishedAt().toString())).toString(),
+                                    rId.getVideoId(),singleVideo.getSnippet().getThumbnails().getMedium().getUrl()));
                         }
                     }
 

@@ -1,12 +1,15 @@
 package com.example.ananmahe.trailerzz;
 
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.ViewGroupCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -17,6 +20,7 @@ import com.google.android.youtube.player.YouTubePlayerView;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -39,15 +43,14 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
     public static class YoutubeDataViewHolder extends RecyclerView.ViewHolder {
         protected TextView vMovieTitle;
         protected TextView vReleaseDate;
-        protected YouTubePlayerView vMovieTrailer;
-        protected YouTubeThumbnailView vMovieThumbnail;
+        protected ImageView vMovieThumbnail;
 
         public YoutubeDataViewHolder(View v) {
             super(v);
             vMovieTitle = (TextView) v.findViewById(R.id.movie_title);
             vReleaseDate = (TextView) v.findViewById(R.id.movie_release_date);
             //vMovieTrailer = (YouTubePlayerView) v.findViewById(R.id.movie_trailer);
-            vMovieThumbnail = (YouTubeThumbnailView) v.findViewById(R.id.movie_thumbnail);
+            vMovieThumbnail = (ImageView) v.findViewById(R.id.movie_image);
         }
     }
 
@@ -62,46 +65,8 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
         final YouTubeData trailerObj = youtubeDataList.get(i);
         youtubeDataViewHolder.vMovieTitle.setText(trailerObj.getTitle());
         youtubeDataViewHolder.vReleaseDate.setText(trailerObj.getReleaseDate());
-        /*youtubeDataViewHolder.vMovieTrailer.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {
-            @Override
-            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                if (!b) {
-                    youTubePlayer.loadVideo(trailerObj.getVideoId());
-                }
-            }
+        Picasso.with(TrailerzzApp.getAppContext()).load(trailerObj.getThumbnailUrl()).into(youtubeDataViewHolder.vMovieThumbnail);
 
-            @Override
-            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult error) {
-                System.out.println(error);
-            }
-        });*/
-
-        final YouTubeThumbnailLoader.OnThumbnailLoadedListener  onThumbnailLoadedListener = new YouTubeThumbnailLoader.OnThumbnailLoadedListener(){
-            @Override
-            public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
-
-            }
-
-            @Override
-            public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
-                //youTubeThumbnailView.setVisibility(View.VISIBLE);
-                //youtubeDataViewHolder.vMovieTrailer.setVisibility(View.VISIBLE);
-            }
-        };
-
-        youtubeDataViewHolder.vMovieThumbnail.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubeThumbnailView.OnInitializedListener() {
-            @Override
-            public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
-
-                youTubeThumbnailLoader.setVideo(trailerObj.getVideoId());
-                youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);
-            }
-
-            @Override
-            public void onInitializationFailure(YouTubeThumbnailView youTubeThumbnailView, YouTubeInitializationResult youTubeInitializationResult) {
-                //write something for failure
-            }
-        });
     }
 
     @Override

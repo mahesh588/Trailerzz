@@ -13,11 +13,13 @@ public class YouTubeData {
     protected String title;
     protected String releaseDate;
     protected String videoId;
+    protected String thumbnailUrl;
 
-    public YouTubeData(String title, String releaseDate, String videoId) {
+    public YouTubeData(String title, String releaseDate, String videoId, String thumbnailUrl) {
         this.title = title;
         this.releaseDate = releaseDate;
         this.videoId = videoId;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public String getTitle() {
@@ -30,6 +32,10 @@ public class YouTubeData {
 
     public String getVideoId() {
         return this.videoId;
+    }
+
+    public String getThumbnailUrl() {
+        return this.thumbnailUrl;
     }
 
 }
