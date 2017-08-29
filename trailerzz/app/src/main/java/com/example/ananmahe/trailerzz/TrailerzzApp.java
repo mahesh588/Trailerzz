@@ -1,6 +1,8 @@
 package com.example.ananmahe.trailerzz;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +13,7 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrailerzzApp extends YouTubeBaseActivity {
+public class TrailerzzApp extends Activity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;

@@ -33,6 +33,8 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
     private List<YouTubeData> youtubeDataList;
     private YoutubeDataAPI youtubeDataAPI;
     private RecyclerView mRecyclerview;
+    public static final String PLAY_VIDEO_MESSAGE = "com.example.trailerzz.PLAY_VIDEO";
+    public static final String INTENT_VIDEO_ID = "videoId";
 
     public YouTubeDataAdapter(RecyclerView mRecyclerview) {
         youtubeDataAPI = new YoutubeDataAPI(this);
@@ -44,6 +46,7 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
         protected TextView vMovieTitle;
         protected TextView vReleaseDate;
         protected ImageView vMovieThumbnail;
+        private  String videoId;
 
         public YoutubeDataViewHolder(View v) {
             super(v);
@@ -51,7 +54,20 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
             vReleaseDate = (TextView) v.findViewById(R.id.movie_release_date);
             //vMovieTrailer = (YouTubePlayerView) v.findViewById(R.id.movie_trailer);
             vMovieThumbnail = (ImageView) v.findViewById(R.id.movie_image);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(TrailerzzApp.getAppContext(), YoutubeFullPlayer.class);
+                    intent.putExtra(INTENT_VIDEO_ID, videoId);
+                    TrailerzzApp.getAppContext().startActivity(intent);
+                }
+            });
         }
+
+        public void setVideoId(String videoId) {
+            this.videoId = videoId;
+        }
+
     }
 
     public void responseRecieved(List<YouTubeData> youtubeDataList) {
@@ -65,6 +81,7 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
         final YouTubeData trailerObj = youtubeDataList.get(i);
         youtubeDataViewHolder.vMovieTitle.setText(trailerObj.getTitle());
         youtubeDataViewHolder.vReleaseDate.setText(trailerObj.getReleaseDate());
+        youtubeDataViewHolder.setVideoId(trailerObj.getVideoId());
         Picasso.with(TrailerzzApp.getAppContext()).load(trailerObj.getThumbnailUrl()).into(youtubeDataViewHolder.vMovieThumbnail);
 
     }
@@ -79,6 +96,8 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
     public int getItemCount() {
         return youtubeDataList.size();
     }
+
+
 }
 
 

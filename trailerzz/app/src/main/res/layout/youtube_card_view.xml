@@ -49,8 +49,6 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Small" />
 
 
-
-
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>
