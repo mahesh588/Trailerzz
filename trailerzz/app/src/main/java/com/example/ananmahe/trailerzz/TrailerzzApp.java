@@ -31,7 +31,8 @@ public class TrailerzzApp extends Activity {
         mLayoutManager = new ZoomCenterCardLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new YouTubeDataAdapter(mRecyclerView);
+        mAdapter = new YouTubeDataAdapter();
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     public static Context getAppContext() {

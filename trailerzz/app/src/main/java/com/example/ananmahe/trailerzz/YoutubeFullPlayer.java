@@ -16,7 +16,9 @@ import com.google.android.youtube.player.YouTubePlayerView;
 
 public class YoutubeFullPlayer extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
     public static final String INTENT_VIDEO_ID = "videoId";
-    public static String videoId = null;
+    private static String videoId = null;
+    public static final String INTENT_INDEX = "index";
+    private static int index = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,7 @@ public class YoutubeFullPlayer extends YouTubeBaseActivity implements YouTubePla
         setContentView(R.layout.activity_youtube_full_player);
         Intent intent = getIntent();
         videoId = intent.getStringExtra(INTENT_VIDEO_ID);
+        index = intent.getIntExtra(INTENT_INDEX, -1);
         System.out.println("Got Message Youtube video: "+videoId);
         YouTubePlayerView youTubeView = findViewById(R.id.youtube_full_view_player);
         youTubeView.initialize(DeveloperKey.DEVELOPER_KEY, this);
@@ -34,6 +37,9 @@ public class YoutubeFullPlayer extends YouTubeBaseActivity implements YouTubePla
                                         boolean wasRestored) {
         if (!wasRestored && videoId != null) {
             player.loadVideo(videoId);
+            if (index > -1) {
+                YoutubeDataAPI.getInstance().setVideoAsWatched(index);
+            }
         }
     }
 

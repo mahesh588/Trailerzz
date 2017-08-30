@@ -14,12 +14,14 @@ public class YouTubeData {
     protected String releaseDate;
     protected String videoId;
     protected String thumbnailUrl;
+    protected  Boolean watched = false;
 
     public YouTubeData(String title, String releaseDate, String videoId, String thumbnailUrl) {
         this.title = title;
         this.releaseDate = releaseDate;
         this.videoId = videoId;
         this.thumbnailUrl = thumbnailUrl;
+        this.watched = false;
     }
 
     public String getTitle() {
@@ -36,6 +38,14 @@ public class YouTubeData {
 
     public String getThumbnailUrl() {
         return this.thumbnailUrl;
+    }
+
+    public Boolean isWatched() {
+        return this.watched;
+    }
+
+    public void setVideoAsWatched() {
+        this.watched = true;
     }
 
 }

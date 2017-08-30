@@ -33,10 +33,24 @@ public class YoutubeDataAPI {
     private static final String CHANNEL_ID = "UCkR0GY0ue02aMyM-oxwgg9g";
     private static YouTube.Search.List search;
     private IYoutubeDataAPIListener mListener;
+    private List<YouTubeData> youtubeDataList = new ArrayList<YouTubeData>();
 
-    public YoutubeDataAPI(IYoutubeDataAPIListener mListener){
+    private static YoutubeDataAPI mObject = null;
+
+    public static YoutubeDataAPI getInstance() {
+        if (mObject == null) {
+            mObject = new YoutubeDataAPI();
+        }
+        return mObject;
+    }
+
+    public void setListener(IYoutubeDataAPIListener mListener) {
+        this.mListener = mListener;
+    }
+
+    private YoutubeDataAPI(){
         try {
-            this.mListener = mListener;
+
             youtubeData = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
                 @Override
                 public void initialize(HttpRequest request) throws IOException {
@@ -58,6 +72,7 @@ public class YoutubeDataAPI {
             search.setFields("items(id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/medium/url)");
             search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
             System.out.println("============: Channel id: " + search.getChannelId());
+            fetchDataFromAPI();
         } catch (GoogleJsonResponseException e) {
             System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
                     + e.getDetails().getMessage());
@@ -68,8 +83,27 @@ public class YoutubeDataAPI {
         }
     }
 
+    public void setVideoAsWatched(int index) {
+        if (youtubeDataList.get(index).isWatched() == false) {
+            youtubeDataList.get(index).setVideoAsWatched();
+            refreshListeners();
+        }
+    }
 
-    public void getData() {
+    public void refreshListeners() {
+        // create a handler to post messages to the main thread
+        Handler mHandler = new Handler(Looper.getMainLooper());
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("######## Sending response");
+                mListener.refreshData(youtubeDataList);
+            }
+        });
+    }
+
+
+    public void fetchDataFromAPI() {
 
         AsyncTask.execute(new Runnable() {
             @Override
@@ -80,7 +114,6 @@ public class YoutubeDataAPI {
                     searchResponse = search.execute();
                     List<SearchResult> searchResultList = searchResponse.getItems();
                     System.out.println("######## Res: "+searchResultList.toString());
-                    final List<YouTubeData> youtubeDataList = new ArrayList<YouTubeData>();
 
                     if (searchResultList != null) {
                         Iterator<SearchResult> iteratorSearchResults = searchResultList.iterator();
@@ -98,15 +131,8 @@ public class YoutubeDataAPI {
                         }
                     }
 
-                    // create a handler to post messages to the main thread
-                    Handler mHandler = new Handler(Looper.getMainLooper());
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            System.out.println("######## Sending response");
-                            mListener.responseRecieved(youtubeDataList);
-                        }
-                    });
+                    refreshListeners();
+
                 } catch (IOException e) {
                     System.err.println("######## There was an IO error: " + e.getCause() + " : " + e.getMessage());
                 } catch (Throwable t) {
@@ -119,7 +145,7 @@ public class YoutubeDataAPI {
     }
 
     interface IYoutubeDataAPIListener {
-        public void responseRecieved(List<YouTubeData> youTubeDataList);
+        public void refreshData(List<YouTubeData> youTubeDataList);
     }
 
 }

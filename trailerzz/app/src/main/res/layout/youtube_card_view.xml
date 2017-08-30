@@ -19,12 +19,11 @@
             android:id="@+id/movie_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginBottom="10dp"
             android:padding="3dp"
             android:text="Movie Title"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
 
 
         <ImageView
@@ -47,6 +46,23 @@
             android:padding="3dp"
             android:text="Release Date"
             android:textAppearance="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Small" />
+
+        <TextView
+            android:id="@+id/movie_watched_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/movie_title"
+            android:layout_marginEnd="14dp"
+            android:layout_marginTop="15dp"
+            android:background="#40000000"
+            android:listSelector="#00000000"
+            android:padding="5dp"
+            android:text="Watched"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="#FFFFFF"
+            android:visibility="invisible" />
 
 
     </RelativeLayout>
