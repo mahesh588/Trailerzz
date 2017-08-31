@@ -30,7 +30,7 @@ import java.util.List;
 public class YoutubeDataAPI {
     private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
     private static YouTube youtubeData;
-    private static final String CHANNEL_ID = "UCkR0GY0ue02aMyM-oxwgg9g";
+    private static final String CHANNEL_ID = "UCBJycsmduvYEL83R_U4JriQ";
     private static YouTube.Search.List search;
     private IYoutubeDataAPIListener mListener;
     private List<YouTubeData> youtubeDataList = new ArrayList<YouTubeData>();

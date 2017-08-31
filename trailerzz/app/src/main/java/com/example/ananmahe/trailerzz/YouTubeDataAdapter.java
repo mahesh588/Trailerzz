@@ -64,7 +64,7 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
                 public void onClick(View view) {
                     Intent intent = new Intent(TrailerzzApp.getAppContext(), YoutubeFullPlayer.class);
                     intent.putExtra(INTENT_VIDEO_ID, videoId);
-                    intent.putExtra(INTENT_INDEX, getAdapterPosition());
+                    intent.putExtra(INTENT_INDEX, index);
                     TrailerzzApp.getAppContext().startActivity(intent);
                 }
             });
