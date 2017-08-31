@@ -22,10 +22,9 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginBottom="10dp"
-            android:fontFamily="sans-serif"
             android:padding="3dp"
             android:text="Movie Title"
-            android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title" />
+            android:textAppearance="@android:style/TextAppearance.Holo.Widget.ActionBar.Title" />
 
 
         <ImageView

@@ -7,13 +7,16 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrailerzzApp extends Activity {
+public class TrailerzzApp extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -22,7 +25,9 @@ public class TrailerzzApp extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_trailerzz_app);
+       
         mRecyclerView = (RecyclerView) findViewById(R.id.youtubeDataRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         TrailerzzApp.context = getApplicationContext();
@@ -34,6 +39,7 @@ public class TrailerzzApp extends Activity {
         mAdapter = new YouTubeDataAdapter();
         mRecyclerView.setAdapter(mAdapter);
     }
+
 
     public static Context getAppContext() {
         return TrailerzzApp.context;

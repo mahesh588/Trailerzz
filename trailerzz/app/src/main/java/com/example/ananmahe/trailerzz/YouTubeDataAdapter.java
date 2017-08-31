@@ -1,26 +1,21 @@
 package com.example.ananmahe.trailerzz;
 
-import android.content.ContextWrapper;
+
 import android.content.Intent;
-import android.net.Uri;
-import android.support.v4.app.ShareCompat;
-import android.support.v4.view.ViewGroupCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.VideoView;
 
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerView;
-import com.google.android.youtube.player.YouTubeStandalonePlayer;
-import com.google.android.youtube.player.YouTubeThumbnailLoader;
-import com.google.android.youtube.player.YouTubeThumbnailView;
+
+
 import com.squareup.picasso.Picasso;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,77 +24,101 @@ import java.util.List;
  * Created by ananmahe on 8/15/17.
  */
 
-public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.YoutubeDataViewHolder> implements YoutubeDataAPI.IYoutubeDataAPIListener {
+class YoutubeDataViewHolder extends RecyclerView.ViewHolder {
+    protected TextView vMovieTitle;
+    protected TextView vReleaseDate;
+    protected ImageView vMovieThumbnail;
+    protected TextView vWatched;
+    private  String videoId;
+
+
+    public YoutubeDataViewHolder(View itemView) {
+        super(itemView);
+        vMovieTitle = (TextView) itemView.findViewById(R.id.movie_title);
+        vReleaseDate = (TextView) itemView.findViewById(R.id.movie_release_date);
+        vMovieThumbnail = (ImageView) itemView.findViewById(R.id.movie_image);
+        vWatched = (TextView) itemView.findViewById(R.id.movie_watched_badge);
+    }
+
+    public YoutubeDataViewHolder setVideoId(String videoId) {
+        this.videoId = videoId;
+        return this;
+    }
+
+    public YoutubeDataViewHolder setMovieTitle(String title) {
+        this.vMovieTitle.setText(title);
+        return this;
+    }
+
+    public YoutubeDataViewHolder setReleaseDate(String date) {
+        this.vReleaseDate.setText(date);
+        return this;
+    }
+
+    public YoutubeDataViewHolder setVisibility(int visibility) {
+        this.vWatched.setVisibility(visibility);
+        return this;
+    }
+
+    public YoutubeDataViewHolder setThumbnail(String thumbnailUrl) {
+        Picasso.with(TrailerzzApp.getAppContext()).load(thumbnailUrl).into(this.vMovieThumbnail);
+        return this;
+    }
+
+    public YoutubeDataViewHolder setOnClickListener(View.OnClickListener listener) {
+        itemView.setOnClickListener(listener);
+        return this;
+    }
+}
+
+
+public class YouTubeDataAdapter extends RecyclerView.Adapter<YoutubeDataViewHolder> implements YoutubeDataController.DataFunctions{
 
     private List<YouTubeData> youtubeDataList = new ArrayList<>();
-    private YoutubeDataAPI youtubeDataAPI;
-    private RecyclerView mRecyclerview;
-    public static final String PLAY_VIDEO_MESSAGE = "com.example.trailerzz.PLAY_VIDEO";
-    public static final String INTENT_VIDEO_ID = "videoId";
-    public static final String INTENT_INDEX = "index";
+    private YoutubeDataController youtubeDataController;
 
     public YouTubeDataAdapter() {
-        youtubeDataAPI = YoutubeDataAPI.getInstance();
-        youtubeDataAPI.setListener(this);
-        //this.mRecyclerview = mRecyclerview;
-    }
-
-    public static class YoutubeDataViewHolder extends RecyclerView.ViewHolder {
-        protected TextView vMovieTitle;
-        protected TextView vReleaseDate;
-        protected ImageView vMovieThumbnail;
-        protected TextView vWatched;
-        private  String videoId;
-        private int index;
-
-        public YoutubeDataViewHolder(View v) {
-            super(v);
-            vMovieTitle = (TextView) v.findViewById(R.id.movie_title);
-            vReleaseDate = (TextView) v.findViewById(R.id.movie_release_date);
-            //vMovieTrailer = (YouTubePlayerView) v.findViewById(R.id.movie_trailer);
-            vMovieThumbnail = (ImageView) v.findViewById(R.id.movie_image);
-            vWatched = (TextView) v.findViewById(R.id.movie_watched_badge);
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(TrailerzzApp.getAppContext(), YoutubeFullPlayer.class);
-                    intent.putExtra(INTENT_VIDEO_ID, videoId);
-                    intent.putExtra(INTENT_INDEX, index);
-                    TrailerzzApp.getAppContext().startActivity(intent);
-                }
-            });
-        }
-
-        public void setVideoId(String videoId) {
-            this.videoId = videoId;
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-    }
-
-    public void refreshData(List<YouTubeData> youtubeDataList) {
-        this.youtubeDataList = youtubeDataList;
-        System.out.println("######### Response recieved");
-        notifyDataSetChanged();
+        youtubeDataController = YoutubeDataController.getInstance();
+        youtubeDataList = youtubeDataController.fetchData();
+        EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onBindViewHolder(final YoutubeDataViewHolder youtubeDataViewHolder, int i) {
+    public void refreshData() {
+        this.youtubeDataList = youtubeDataController.fetchData();
+        notifyDataSetChanged();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onYoutubeDataChangeEvent(YoutubeDataChangeEvent event) {
+        refreshData();
+    };
+
+
+    @Override
+    public void onBindViewHolder(final YoutubeDataViewHolder youtubeDataViewHolder, final int i) {
         final YouTubeData trailerObj = youtubeDataList.get(i);
-        System.out.println("###### Movie: "+trailerObj.getTitle()+" Index: "+Integer.toString(i)+ " Watched: "+Boolean.toString(trailerObj.isWatched()));
+
         if(trailerObj.isWatched() == true) {
-            youtubeDataViewHolder.vWatched.setVisibility(View.VISIBLE);
+            youtubeDataViewHolder.setVisibility(View.VISIBLE);
         } else {
-            youtubeDataViewHolder.vWatched.setVisibility(View.INVISIBLE);
+            youtubeDataViewHolder.setVisibility(View.INVISIBLE);
         }
-        youtubeDataViewHolder.vMovieTitle.setText(trailerObj.getTitle());
-        youtubeDataViewHolder.vReleaseDate.setText(trailerObj.getReleaseDate());
-        youtubeDataViewHolder.setVideoId(trailerObj.getVideoId());
-        youtubeDataViewHolder.setIndex(i);
-        Picasso.with(TrailerzzApp.getAppContext()).load(trailerObj.getThumbnailUrl()).into(youtubeDataViewHolder.vMovieThumbnail);
+
+        //Using flavour of Builder Pattern
+        youtubeDataViewHolder.setMovieTitle(trailerObj.getTitle())
+                             .setReleaseDate(trailerObj.getReleaseDate())
+                             .setThumbnail(trailerObj.getThumbnailUrl())
+                             .setVideoId(trailerObj.getVideoId())
+                             .setOnClickListener(new View.OnClickListener() {
+                                 @Override
+                                 public void onClick(View view) {
+                                     Intent intent = new Intent(TrailerzzApp.getAppContext(), YoutubeFullPlayer.class);
+                                     intent.putExtra("videoId", trailerObj.getVideoId());
+                                     intent.putExtra("index", i);
+                                     TrailerzzApp.getAppContext().startActivity(intent);
+                                 }
+                             });
     }
 
     @Override
@@ -115,5 +134,4 @@ public class YouTubeDataAdapter extends RecyclerView.Adapter<YouTubeDataAdapter.
 
 
 }
-
 

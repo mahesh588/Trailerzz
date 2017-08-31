@@ -50,7 +50,6 @@ public class YoutubeDataAPI {
 
     private YoutubeDataAPI(){
         try {
-
             youtubeData = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
                 @Override
                 public void initialize(HttpRequest request) throws IOException {
@@ -102,6 +101,9 @@ public class YoutubeDataAPI {
         });
     }
 
+    public List<YouTubeData> getData() {
+        return this.youtubeDataList;
+    }
 
     public void fetchDataFromAPI() {
 
