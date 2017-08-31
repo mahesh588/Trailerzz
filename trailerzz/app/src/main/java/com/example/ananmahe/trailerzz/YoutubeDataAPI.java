@@ -30,7 +30,7 @@ import java.util.List;
 public class YoutubeDataAPI {
     private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
     private static YouTube youtubeData;
-    private static final String CHANNEL_ID = "UCBJycsmduvYEL83R_U4JriQ";
+    private static final String CHANNEL_ID = "UCkR0GY0ue02aMyM-oxwgg9g";
     private static YouTube.Search.List search;
     private IYoutubeDataAPIListener mListener;
     private List<YouTubeData> youtubeDataList = new ArrayList<YouTubeData>();
@@ -126,7 +126,7 @@ public class YoutubeDataAPI {
                             SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD hh:mm:ss");
 
                             youtubeDataList.add(new YouTubeData(singleVideo.getSnippet().getTitle(),
-                                    sdf.format(new SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss").parse(singleVideo.getSnippet().getPublishedAt().toString())).toString(),
+                                    sdf.format(new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ss.SSS'Z'").parse(singleVideo.getSnippet().getPublishedAt().toString())).toString(),
                                     rId.getVideoId(),singleVideo.getSnippet().getThumbnails().getMedium().getUrl()));
                         }
                     }
