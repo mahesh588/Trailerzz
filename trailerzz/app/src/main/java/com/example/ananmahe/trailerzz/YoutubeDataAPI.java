@@ -19,6 +19,7 @@ import com.google.api.services.youtube.model.SearchResult;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,12 +35,15 @@ public class YoutubeDataAPI {
     private static YouTube.Search.List search;
     private IYoutubeDataAPIListener mListener;
     private List<YouTubeData> youtubeDataList = new ArrayList<YouTubeData>();
+    private static Object mutex= new Object();
 
     private static YoutubeDataAPI mObject = null;
 
     public static YoutubeDataAPI getInstance() {
         if (mObject == null) {
-            mObject = new YoutubeDataAPI();
+            synchronized (mutex) {
+                mObject = new YoutubeDataAPI();
+            }
         }
         return mObject;
     }
@@ -71,7 +75,6 @@ public class YoutubeDataAPI {
             search.setFields("items(id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/medium/url)");
             search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
             System.out.println("============: Channel id: " + search.getChannelId());
-            fetchDataFromAPI();
         } catch (GoogleJsonResponseException e) {
             System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
                     + e.getDetails().getMessage());
@@ -111,7 +114,9 @@ public class YoutubeDataAPI {
             @Override
             public void run() {
                 try {
-                    Looper.prepare();
+                    if (Looper.myLooper() == null) {
+                        Looper.prepare();
+                    }
                     final SearchListResponse searchResponse;
                     searchResponse = search.execute();
                     List<SearchResult> searchResultList = searchResponse.getItems();
@@ -121,7 +126,13 @@ public class YoutubeDataAPI {
                         Iterator<SearchResult> iteratorSearchResults = searchResultList.iterator();
                         if (!iteratorSearchResults.hasNext()) {
                             System.out.println("There aren't any results for your query.");
+                            return;
                         }
+
+                        // Clearing the current list on getting new list from Youtube.
+                        // TODO: Clearing will remove the Watched badge flag. Write logic to retain Watched Badge
+                        youtubeDataList.clear();
+
                         while (iteratorSearchResults.hasNext()) {
                             SearchResult singleVideo = iteratorSearchResults.next();
                             ResourceId rId = singleVideo.getId();
