@@ -31,7 +31,7 @@ public class YoutubeDataController implements YoutubeDataAPI.IYoutubeDataAPIList
         return YoutubeDataAPI.getInstance().getData();
     }
 
-    interface DataFunctions {
+    interface IDataFunctions {
         void refreshData();
     }
 

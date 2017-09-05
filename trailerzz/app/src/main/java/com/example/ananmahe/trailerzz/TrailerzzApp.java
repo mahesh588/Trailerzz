@@ -21,6 +21,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class TrailerzzApp extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -44,8 +45,8 @@ public class TrailerzzApp extends AppCompatActivity {
         //Syncing youtube data on create
         syncYoutubeData();
 
-        //Add refresh Listener
-        refreshYoutubeData();
+        //Attach swipe refresh listener
+        attachSwipeRefreshListener();
 
         // use a linear layout manager
         mLayoutManager = new ZoomCenterCardLayoutManager(this);
@@ -68,7 +69,7 @@ public class TrailerzzApp extends AppCompatActivity {
         startService(intent);
     }
 
-    private void refreshYoutubeData() {
+    private void attachSwipeRefreshListener() {
         final SwipeRefreshLayout mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

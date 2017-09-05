@@ -72,7 +72,7 @@ class YoutubeDataViewHolder extends RecyclerView.ViewHolder {
 }
 
 
-public class YouTubeDataAdapter extends RecyclerView.Adapter<YoutubeDataViewHolder> implements YoutubeDataController.DataFunctions{
+public class YouTubeDataAdapter extends RecyclerView.Adapter<YoutubeDataViewHolder> implements YoutubeDataController.IDataFunctions{
 
     private List<YouTubeData> youtubeDataList = new ArrayList<>();
     private YoutubeDataController youtubeDataController;
